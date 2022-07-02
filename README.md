@@ -12,7 +12,7 @@ NJU 2021 级`软件工程与计算I`课程大作业：一个简化版的 JVM
 
 平常写代码就写点力扣那种算法题，基本没碰路径啊文件啊这些，反思中！
 
-代码主要是在`src/main/java/vjvm/classLoader/searchpath/JarSearchpath` 和 `src/main/java/vjvm/classLoader/searchpath/DirSearchpath` 中
+代码主要是在 `src/main/java/vjvm/classLoader/searchpath/JarSearchpath` 和 `src/main/java/vjvm/classLoader/searchpath/DirSearchpath` 中
 
 ### Lab1.2
 
@@ -113,7 +113,24 @@ NJU 2021 级`软件工程与计算I`课程大作业：一个简化版的 JVM
    }
    ```
 
-7. 提供了调试器，但是我没用到，全程使用 `sout`调试 :rofl:
+7. 提供了调试器，但是我没用到，全程使用 `sout` 调试 :rofl:
 8. 某个指令中埋下了一个 bug，`sout` 后成功追杀到 bug
 9. 最后才发现打印出的是 `Hello, Wor1d`，没消灭那个 bug 前打印出的是 `Hello, Wor-1d`
 10. 反思：对于反复~~横跳~~跳转的程序还是有畏难心理。另外这个期末真的感觉要活不出来了:cry:
+
+### Lab2.2
+
+完结撒花:tada:，并且成功活过了期末，但是软工II快活不下去啦
+
+这次 Lab 要实现 JVM 中几乎所有的指令，虽说绝大部分的操作很简单，但是由于本人学艺不佳，全程 if-else，复制粘贴好痛苦，算是修炼成了 CV 战神:rofl:
+
+这次 Lab 前前后后写了快 10H 吧，有点痛苦，但好在对着 JVM 规范写还是算容易的，第一遍写完只出了几行的 bug，值得表扬！并且测试用例不是很坑人。惊讶的是本地一个用例一直过不去但是提交以后就通过了
+
+## 大作业总结
+
+1. 经过了一年的学习终于可以拿捏曾经拿捏我的软工 I 大作业了:rofl:
+2. 比较深入学习了 JVM
+3. 助教给的几个字节码的实现里用了函数式编程的技巧，但是由于时间太赶我直接用的 if-else，之后有时间可能用函数式编程重构以下（虽然知道几乎没可能了，懒人）
+
+4. 调试的技巧还需要学习，用 JAR 运行的程序怎么 debug 啊，一行行写 sout 再一行行注释掉真的好痛苦
+5. ~~写软工 II~~睡觉去了（

@@ -14,6 +14,7 @@ public class XPUSH extends Instruction {
   private final String name;
 
   public static XPUSH BIPUSH(ProgramCounter pc, MethodInfo method) {
+    // use the all args constructor provided by Lombok
     return new XPUSH(pc.byte_(), "bipush");
   }
 

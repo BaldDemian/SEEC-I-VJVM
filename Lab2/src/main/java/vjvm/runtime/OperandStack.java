@@ -4,7 +4,10 @@ import lombok.var;
 import vjvm.utils.UnimplementedError;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 public class OperandStack {
+
   @Getter
   private final Slots slots;
 
@@ -27,6 +30,7 @@ public class OperandStack {
   public int popInt() {
     // pop value
     int res = slots.int_(top - 1);
+    //System.out.println("popping int");
     slots.setSlot(null, top - 1);
     top--;
     return res;
@@ -40,7 +44,8 @@ public class OperandStack {
 
   public float popFloat() {
     // pop value
-    float res = slots().float_(top - 1);
+    //System.out.println("popping float");
+    float res = slots.float_(top - 1);
     slots.setSlot(null, top - 1);
     top--;
     return res;
@@ -48,13 +53,17 @@ public class OperandStack {
 
   public void pushLong(long value) {
     // push value
+    //System.out.println("push long in OperandStack is running!");
+    //System.out.println("top is " + top);
     slots.long_(top, value);
     top = top + 2;
   }
 
   public long popLong() {
     // pop value
-    long res = slots().long_(top - 2);
+    //System.out.println("popping long");
+    //System.out.println("top is " + top);
+    long res = slots.long_(top - 2);
     slots.setSlot(null, top - 2);
     top = top - 2;
     return res;
@@ -68,7 +77,8 @@ public class OperandStack {
 
   public double popDouble() {
     // pop value
-    double res = slots().double_(top - 2);
+    //System.out.println("popping double");
+    double res = slots.double_(top - 2);
     slots.setSlot(null, top - 2);
     top = top - 2;
     return res;
@@ -82,7 +92,8 @@ public class OperandStack {
 
   public byte popByte() {
     // pop value
-    byte res = slots().byte_(top - 1);
+    //System.out.println("popping byte");
+    byte res = slots.byte_(top - 1);
     slots.setSlot(null, top - 1);
     top--;
     return res;
@@ -96,7 +107,8 @@ public class OperandStack {
 
   public char popChar() {
     // pop value
-    char res = slots().char_(top - 1);
+    //System.out.println("popping char");
+    char res = slots.char_(top - 1);
     slots.setSlot(null, top - 1);
     top--;
     return res;
@@ -110,7 +122,8 @@ public class OperandStack {
 
   public short popShort() {
     // pop value
-    short res = slots().short_(top - 1);
+    //System.out.println("popping short");
+    short res = slots.short_(top - 1);
     slots.setSlot(null, top - 1);
     top--;
     return res;
@@ -119,7 +132,7 @@ public class OperandStack {
   public void pushSlots(Slots slots) {
     // push slots
     int size = slots.size();
-    for (int i = 0; i < size; i++) {
+    for (int i = size - 1; i >= 0; i--) {
       this.slots.setSlot(slots.getSlot(i), top);
       top = top + 1;
     }
@@ -127,11 +140,11 @@ public class OperandStack {
 
   public Slots popSlots(int count) {
     // pop count slots and return
-    // ??? Sequence ???
+    // System.out.println("popping slots!! count is " + count);
     Slots res = new Slots(count);
     for (int i = 0; i < count; i++) {
       top = top - 1;
-      res.setSlot(this.slots.getSlot(top), i);
+      res.setSlot(this.slots.getSlot(top), count - i - 1);
       slots.setSlot(null, top);
     }
     return res;

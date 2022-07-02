@@ -3,11 +3,28 @@ package vjvm.interpreter.instruction;
 import java.util.function.BiFunction;
 
 import lombok.var;
+import vjvm.interpreter.instruction.comparisons.IFCOND;
+import vjvm.interpreter.instruction.comparisons.IF_XCMPCOND;
+import vjvm.interpreter.instruction.comparisons.LCMP;
+import vjvm.interpreter.instruction.comparisons.XCMPCOND;
+import vjvm.interpreter.instruction.constants.LDCX;
+import vjvm.interpreter.instruction.constants.NOP;
 import vjvm.interpreter.instruction.constants.XCONST_Y;
 import vjvm.interpreter.instruction.constants.XPUSH;
+import vjvm.interpreter.instruction.control.GOTO;
+import vjvm.interpreter.instruction.conversions.X2Y;
+import vjvm.interpreter.instruction.loads.XLOAD;
+import vjvm.interpreter.instruction.math.IINC;
+import vjvm.interpreter.instruction.math.LIOPR;
+import vjvm.interpreter.instruction.math.XNEG;
+import vjvm.interpreter.instruction.math.XOPR;
 import vjvm.interpreter.instruction.references.INVOKESTATIC;
 import vjvm.interpreter.instruction.reserved.BREAKPOINT;
 import vjvm.interpreter.instruction.control.XRETURN;
+import vjvm.interpreter.instruction.stack.DUPX;
+import vjvm.interpreter.instruction.stack.POPX;
+import vjvm.interpreter.instruction.stack.SWAP;
+import vjvm.interpreter.instruction.stores.XSTORE;
 import vjvm.runtime.ProgramCounter;
 import vjvm.runtime.classdata.MethodInfo;
 import vjvm.utils.UnimplementedInstructionError;
@@ -15,11 +32,11 @@ import vjvm.utils.UnimplementedInstructionError;
 public class Decoder {
 
   public static Instruction decode(ProgramCounter pc, MethodInfo method) {
+    // read the first byte to get the opcode
     var opcode = Byte.toUnsignedInt(pc.byte_());
     if (Decoder.decodeTable[opcode] == null) {
       throw new UnimplementedInstructionError(opcode);
     }
-
     return Decoder.decodeTable[opcode].apply(pc, method);
   }
 
@@ -31,50 +48,50 @@ public class Decoder {
 
   static final BiFunction<ProgramCounter, MethodInfo, Instruction>[] decodeTable = of(
   // @formatter:off
-      /* 0x00 */  null, null, XCONST_Y::ICONST_M1, XCONST_Y::ICONST_0,
+      /* 0x00 */  NOP::NOP, null, XCONST_Y::ICONST_M1, XCONST_Y::ICONST_0,
       /* 0x04 */  XCONST_Y::ICONST_1, XCONST_Y::ICONST_2, XCONST_Y::ICONST_3, XCONST_Y::ICONST_4,
-      /* 0x08 */  XCONST_Y::ICONST_5, null, null, null,
-      /* 0x0c */  null, null, null, null,
-      /* 0x10 */  XPUSH::BIPUSH, XPUSH::SIPUSH, null, null,
-      /* 0x14 */  null, null, null, null,
-      /* 0x18 */  null, null, null, null,
-      /* 0x1c */  null, null, null, null,
-      /* 0x20 */  null, null, null, null,
-      /* 0x24 */  null, null, null, null,
-      /* 0x28 */  null, null, null, null,
+      /* 0x08 */  XCONST_Y::ICONST_5, XCONST_Y::LCONST_0, XCONST_Y::LCONST_1, XCONST_Y::FCONST_0,
+      /* 0x0c */  XCONST_Y::FCONST_1, XCONST_Y::FCONST_2, XCONST_Y::DCONST_0, XCONST_Y::DCONST_1,
+      /* 0x10 */  XPUSH::BIPUSH, XPUSH::SIPUSH, LDCX::LDC, LDCX::LDC_W,
+      /* 0x14 */  LDCX::LDC2_W, XLOAD::ILOAD, XLOAD::LLOAD, XLOAD::FLOAD,
+      /* 0x18 */  XLOAD::DLOAD, null, XLOAD::ILOAD_0, XLOAD::ILOAD_1,
+      /* 0x1c */  XLOAD::ILOAD_2, XLOAD::ILOAD_3, XLOAD::LLOAD_0, XLOAD::LLOAD_1,
+      /* 0x20 */  XLOAD::LLOAD_2, XLOAD::LLOAD_3, XLOAD::FLOAD_0, XLOAD::FLOAD_1,
+      /* 0x24 */  XLOAD::FLOAD_2, XLOAD::FLOAD_3, XLOAD::DLOAD_0, XLOAD::DLOAD_1,
+      /* 0x28 */  XLOAD::DLOAD_2, XLOAD::DLOAD_3, null, null,
       /* 0x2c */  null, null, null, null,
       /* 0x30 */  null, null, null, null,
-      /* 0x34 */  null, null, null, null,
-      /* 0x38 */  null, null, null, null,
-      /* 0x3c */  null, null, null, null,
-      /* 0x40 */  null, null, null, null,
-      /* 0x44 */  null, null, null, null,
-      /* 0x48 */  null, null, null, null,
+      /* 0x34 */  null, null, XSTORE::ISTORE, XSTORE::LSTORE,
+      /* 0x38 */  XSTORE::FSTORE, XSTORE::DSTORE, null, XSTORE::ISTORE_0,
+      /* 0x3c */  XSTORE::ISTORE_1, XSTORE::ISTORE_2, XSTORE::ISTORE_3, XSTORE::LSTORE_0,
+      /* 0x40 */  XSTORE::LSTORE_1, XSTORE::LSTORE_2, XSTORE::LSTORE_3, XSTORE::FSTORE_0,
+      /* 0x44 */  XSTORE::FSTORE_1, XSTORE::FSTORE_2, XSTORE::FSTORE_3, XSTORE::DSTORE_0,
+      /* 0x48 */  XSTORE::DSTORE_1, XSTORE::DSTORE_2, XSTORE::DSTORE_3, null,
       /* 0x4c */  null, null, null, null,
       /* 0x50 */  null, null, null, null,
-      /* 0x54 */  null, null, null, null,
-      /* 0x58 */  null, null, null, null,
-      /* 0x5c */  null, null, null, null,
-      /* 0x60 */  null, null, null, null,
-      /* 0x64 */  null, null, null, null,
-      /* 0x68 */  null, null, null, null,
-      /* 0x6c */  null, null, null, null,
-      /* 0x70 */  null, null, null, null,
-      /* 0x74 */  null, null, null, null,
-      /* 0x78 */  null, null, null, null,
-      /* 0x7c */  null, null, null, null,
-      /* 0x80 */  null, null, null, null,
-      /* 0x84 */  null, null, null, null,
-      /* 0x88 */  null, null, null, null,
-      /* 0x8c */  null, null, null, null,
-      /* 0x90 */  null, null, null, null,
-      /* 0x94 */  null, null, null, null,
-      /* 0x98 */  null, null, null, null,
-      /* 0x9c */  null, null, null, null,
-      /* 0xa0 */  null, null, null, null,
-      /* 0xa4 */  null, null, null, null,
+      /* 0x54 */  null, null, null, POPX::POP,
+      /* 0x58 */  POPX::POP2, DUPX::DUP, DUPX::DUP_X1, DUPX::DUP_X2,
+      /* 0x5c */  DUPX::DUP2, DUPX::DUP2_X1, DUPX::DUP2_X1, SWAP::SWAP,
+      /* 0x60 */  XOPR::IADD, XOPR::LADD, XOPR::FADD, XOPR::DADD,
+      /* 0x64 */  XOPR::ISUB, XOPR::LSUB, XOPR::FSUB, XOPR::DSUB,
+      /* 0x68 */  XOPR::IMUL, XOPR::LMUL, XOPR::FMUL, XOPR::DMUL,
+      /* 0x6c */  XOPR::IDIV, XOPR::LDIV, XOPR::FDIV, XOPR::DDIV,
+      /* 0x70 */  XOPR::IREM, XOPR::LREM, XOPR::FREM, XOPR::DREM,
+      /* 0x74 */  XNEG::INEG, XNEG::LNEG, XNEG::FNEG, XNEG::DNEG,
+      /* 0x78 */  LIOPR::ISHL, LIOPR::LSHL, LIOPR::ISHR, LIOPR::LSHR,
+      /* 0x7c */  LIOPR::IUSHR, LIOPR::LUSHR, LIOPR::IAND, LIOPR::LAND,
+      /* 0x80 */  LIOPR::IOR, LIOPR::LOR, LIOPR::IXOR, LIOPR::LXOR,
+      /* 0x84 */  IINC::IINC, X2Y::I2L, X2Y::I2F, X2Y::I2D,
+      /* 0x88 */  X2Y::L2I, X2Y::L2F, X2Y::L2D, X2Y::F2I,
+      /* 0x8c */  X2Y::F2L, X2Y::F2D, X2Y::D2I, X2Y::D2L,
+      /* 0x90 */  X2Y::D2F, X2Y::I2B, X2Y::I2C, X2Y::I2S,
+      /* 0x94 */  LCMP::LCMP, XCMPCOND::FCMPL, XCMPCOND::FCMPG, XCMPCOND::DCMPL,
+      /* 0x98 */  XCMPCOND::DCMPG, IFCOND::IFEQ, IFCOND::IFNE, IFCOND::IFLT,
+      /* 0x9c */  IFCOND::IFGE, IFCOND::IFGT, IFCOND::IFLE, IF_XCMPCOND::IF_ICMPEQ,
+      /* 0xa0 */  IF_XCMPCOND::IF_ICMPNE, IF_XCMPCOND::IF_ICMPLT, IF_XCMPCOND::IF_ICMPGE, IF_XCMPCOND::IF_ICMPGT,
+      /* 0xa4 */  IF_XCMPCOND::IF_ICMPLE, null, null, GOTO::GOTO,
       /* 0xa8 */  null, null, null, null,
-      /* 0xac */  null, null, null, null,
+      /* 0xac */  XRETURN::IRETURN, XRETURN::LRETURN, XRETURN::FRETURN, XRETURN::DRETURN,
       /* 0xb0 */  null, XRETURN::RETURN, null, null,
       /* 0xb4 */  null, null, null, null,
       /* 0xb8 */  INVOKESTATIC::new, null, null, null,

@@ -12,6 +12,7 @@ import static vjvm.classfiledefs.Descriptors.DESC_reference;
 
 public class MethodDescriptors {
   public static int argc(String descriptor) {
+    //System.out.println(descriptor);
     char[] arr = new char[]{
       'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z'
     };

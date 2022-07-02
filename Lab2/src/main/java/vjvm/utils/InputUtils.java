@@ -15,6 +15,7 @@ public class InputUtils {
 
   @SneakyThrows
   public static long readLong() {
+    //System.out.println("Run!!!");
     var in = System.in;
     long i = 0;
     boolean negative = false;
@@ -34,7 +35,7 @@ public class InputUtils {
       i += c - '0';
       c = in.read();
     }
-
+    //System.out.println(negative ? -i : i);
     return negative ? -i : i;
   }
 

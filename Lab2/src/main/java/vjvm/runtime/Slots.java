@@ -1,5 +1,6 @@
 package vjvm.runtime;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -17,13 +18,17 @@ public class Slots {
     return slots[index];
   }
   public void setSlot(Object obj, int index) {
+    //System.out.println("Setting slots! at index " + index);
+   // System.out.println(Arrays.toString(slots));
     slots[index] = obj;
+    //System.out.println(Arrays.toString(slots));
   }
   public int int_(int index) {
     // return the int at index
     assert slots[index] instanceof Integer;
     Integer i = (Integer) slots[index];
     int res = i; // auto unboxxing
+    //System.out.println("get int" + res);
     return res;
   }
 
@@ -31,13 +36,17 @@ public class Slots {
     // set the int at index
     Integer i = value; //auto boxxing
     slots[index] = i;
+    //System.out.println(i);
   }
 
   public long long_(int index) {
     // return the long at index
+    //System.out.println("index is " + index);
+    //System.out.println(Arrays.toString(slots));
     assert slots[index] instanceof Long;
     Long l = (Long) slots[index];
     long res = l;
+    //System.out.println("get long at " + index + " " + res);
     return res;
   }
 
@@ -45,6 +54,8 @@ public class Slots {
     // set the long at index
     Long l = value;
     slots[index] = l;
+    //System.out.println("set long at " + index + " " + value);
+    //System.out.println(Arrays.toString(slots));
   }
 
   public float float_(int index) {
@@ -52,6 +63,7 @@ public class Slots {
     assert slots[index] instanceof Float;
     Float f = (Float) slots[index];
     float res = f;
+    //System.out.println("get float" + res);
     return res;
   }
 
@@ -120,6 +132,7 @@ public class Slots {
 
   public Optional<Object> value(int index) {
     // TODO(optional): return the value at index, or null if there is no value stored at index
+
     return Optional.empty();
   }
 
